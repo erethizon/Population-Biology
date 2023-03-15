@@ -1,0 +1,73 @@
+---
+title: "Growth Curves"
+format: html
+editor: visual
+---
+
+Set things up:
+
+```{r, echo=FALSE}
+rm(list = ls())
+library(tidyverse)
+library(here)
+```
+
+Monkeying around with growth curves in R
+
+See [this website](https://www.tjmahr.com/anatomy-of-a-logistic-growth-curve/)
+
+The example below plots some (simulated) data representing population growth over time.
+
+Start with 6 checks of population size at different times
+
+```{r}
+mypoints<- tibble(
+  sample_time = c(10,38,45,52,61, 80, 95),
+  N = c(10, 146, 241, 571, 745, 843, 738 )
+)
+
+colors <-list(
+  data = "#41414550",
+  fit = "#414145"
+)
+```
+
+Now plot
+
+```{r}
+ggplot(mypoints) +
+  aes(x = sample_time, y = N) +
+  geom_point(size = 3.5, color = colors$data) +
+  scale_x_continuous(
+    name = "Year",
+    limits = c(0, 100)
+  )+
+  labs(y = "Population size")
+```
+
+Now let's create the logistic growth curve for these data
+
+```{r}
+xs <-seq(0,100, length.out = 80)
+#create the curve from the equation parameters
+mytrend<-tibble(
+  sample_time = xs,
+  asymptote = 800,
+  scale = 0.004,
+  midpoint = 480,
+  prop = asymptote/(1 + exp((midpoint - sample_time)*scale)))
+
+```
+
+And plot
+
+```{r}
+ggplot(mypoints)+
+  aes(x = sample_time, y = N) +
+  geom_point(size = 3.5, color = colors$data) +
+  geom_line(data = mytrend, aes(x = sample_time, y = prop), color = colors$fit) +
+  scale_x_continuous(
+    name = "Year",
+    limits = c(0,100))+
+  labs(y = "Population size")
+```
