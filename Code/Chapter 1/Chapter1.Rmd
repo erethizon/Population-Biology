@@ -1,0 +1,38 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Set things up 
+
+```{r}
+rm(list = ls())
+library(tidyverse)
+library(here)
+library(primer)
+```
+
+Working through [Chapter 1](https://hankstevens.github.io/Primer-of-Ecology/theory.html) of [A Primer of Ecology with R](https://hankstevens.github.io/Primer-of-Ecology/index.html) by Hank Stevens.
+
+## Metabolic theory of ecology
+
+Let's plot the Kleiber curve using the `curve()` function which can plot any curve that can be expressed as a function of x.
+
+```{r}
+## using curve, let your variable be 'x'.
+curve(1*x, from = .01, to=100, ylab = "Metabolic rate (B)",
+      xlab="Body mass (M)", lty=3)
+curve(x^(3/4), from = .01, to = 100, add=TRUE)
+```
+And look at mass-specific metabolic rate, which is generally basal metabolism divided by body mass.
+
+The rule is that *mass-specific metabolic rate declines with organisms mass raised to the negative one-quarter power*
+
+```{r}
+eq1 = function(M, a){a*M^-0.25} # create the function, F(M)
+ggplot(data=data.frame(x=c(0.1, 100)), aes(x=x) ) + 
+  stat_function(fun=eq1, geom="line", args=list(a=1)) + 
+  xlab("Mass (M)") + ylab("Mass-specific metabolic rate (B/M)")
+
+```
+
